@@ -104,9 +104,10 @@ begin
 
     SSD2Unit: SSD2 port map (clk, to_display(3 downto 0), to_display(7 downto 4), to_display(11 downto 8), to_display(15 downto 12), an, cat);
 
-    process(clk)
+    process(clk, plus, times, rst, first_half, second_half, A_fh, A_sh, B_fh, B_sh)
         variable stateMult, opChosen, inputDone: std_logic := '0';
         variable result: std_logic_vector(31 downto 0) := "00000000000000000000000000000000";
+        variable resultsProcessed: boolean := false;
     begin
         if rising_edge(clk) then
 
@@ -127,16 +128,35 @@ begin
                 stateMult := '0';
                 opChosen := '0';
                 inputDone := '0';
+                resultsProcessed := false;
             end if;
+
+            --            if first_half = '1' and opChosen = '0' then
+            --                enA1 <= '1';
+            --                else enA1 <= '0';
+            --            end if;
+            --            if second_half = '1' and opChosen = '0' then               
+            --                enA2 <= '1';
+            --                else enA2 <= '0';
+            --            end if;
 
             if first_half = '1' and opChosen = '0' then
                 enA1 <= '1';
-                else enA1 <= '0';
-            end if;
-            if second_half = '1' and opChosen = '0' then               
+            elsif second_half = '1' and opChosen = '0' then
                 enA2 <= '1';
-                else enA2 <= '0';
+            elsif first_half = '1' and opChosen = '1' then
+                enB1 <= '1';
+            elsif second_half = '1' and opChosen = '1' then
+                enB2 <= '1';
+                inputDone := '1';
+            else
+                -- Add appropriate conditions if needed to ensure registers stay enabled
+                enA1 <= enA1;
+                enA2 <= enA2;
+                enB1 <= enB1;
+                enB2 <= enB2;
             end if;
+
 
             if plus = '1' then
                 opChosen := '1';
@@ -147,25 +167,38 @@ begin
                 stateMult := '1';
             end if;
 
-            if first_half = '1' and opChosen = '1' then
-                enB1 <= '1';
-                else enB1 <= '0';
-            end if;
-            if second_half = '1' and opChosen = '1' then
-                enB2 <= '1';
-                inputDone := '1';
-                else enB2 <= '0';
-            end if;
+            --            if first_half = '1' and opChosen = '1' then
+            --                enB1 <= '1';
+            --                else enB1 <= '0';
+            --            end if;
+            --            if second_half = '1' and opChosen = '1' then
+            --                enB2 <= '1';
+            --                inputDone := '1';
+            --                else enB2 <= '0';
+            --            end if;
 
-            if inputDone = '1' then
-                if stateAdd = '1' then result := sum;
-                else if stateMult = '1' then result := product;
-                    end if;
+            --            if inputDone = '1' then
+            --                if stateAdd = '1' then result := sum;
+            --                else if stateMult = '1' then result := product;
+            --                    end if;
+            --                end if;
+            --                report integer'image(CONV_INTEGER(UNSIGNED(result)));
+            --                to_display <= result(31 downto 16);
+            --            end if;
+
+            if inputDone = '1' and not resultsProcessed then
+                if stateAdd = '1' then
+                    result := sum;
+                elsif stateMult = '1' then
+                    result := product;
                 end if;
+
                 report integer'image(CONV_INTEGER(UNSIGNED(result)));
                 to_display <= result(31 downto 16);
+
+                resultsProcessed := true;  -- Set the flag to true after processing results
             end if;
-            
+
             led(0) <= enA1;
             led(1) <= enA2;
             led(2) <= enB1;
@@ -175,7 +208,7 @@ begin
 
             led(5) <= stateAdd;
             led(6) <= stateMult;
-            
+
             led(7) <= inputDone;
             if result = "00000000000000000000000000000000" then led(8) <= '1';
             end if;
@@ -187,6 +220,9 @@ begin
             end if;
             if B_sh = "0000000000000000" then led(12) <= '1';
             end if;
+            led(13) <= first_half;
+            led(14) <= second_half;
+            led(15) <=  times;
             --led(15 downto 8) <= result(31 downto 24);
 
         end if;
