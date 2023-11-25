@@ -131,15 +131,11 @@ begin
 
             if first_half = '1' and opChosen = '0' then
                 enA1 <= '1';
-                enA2 <= '0';
-                enB1 <= '0';
-                enB2 <= '0';
+                else enA1 <= '0';
             end if;
-            if second_half = '1' and opChosen = '0' then
-                enA1 <= '0';
+            if second_half = '1' and opChosen = '0' then               
                 enA2 <= '1';
-                enB1 <= '0';
-                enB2 <= '0';
+                else enA2 <= '0';
             end if;
 
             if plus = '1' then
@@ -152,17 +148,13 @@ begin
             end if;
 
             if first_half = '1' and opChosen = '1' then
-                enA1 <= '0';
-                enA2 <= '0';
                 enB1 <= '1';
-                enB2 <= '0';
+                else enB1 <= '0';
             end if;
             if second_half = '1' and opChosen = '1' then
-                enA1 <= '0';
-                enA2 <= '0';
-                enB1 <= '0';
                 enB2 <= '1';
                 inputDone := '1';
+                else enB2 <= '0';
             end if;
 
             if inputDone = '1' then

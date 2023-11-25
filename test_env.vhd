@@ -177,6 +177,8 @@ begin
                 inputDone := '1';
             end if;
             led(4) <= loadBS;
+            if A_FH = "0000000000000000" then led(15) <= '1';
+            end if;
             if inputDone = '1'  then
                 if (addState = '1' and multState = '0') then
                     result <= sum;
