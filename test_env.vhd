@@ -1,8 +1,5 @@
 library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.STD_LOGIC_ARITH.ALL;
-use IEEE.STD_LOGIC_UNSIGNED.ALL;
-use IEEE.STD_LOGIC_TEXTIO.ALL; -- Add this line for text I/O
 
 entity test_env is
     Port (sw: in std_logic_vector(15 downto 0);
@@ -15,9 +12,6 @@ entity test_env is
 end test_env;
 
 architecture Behavioral of test_env is
-
-    --file result_file : TEXT open WRITE_MODE is "result.txt";
-
     component SSD is
         Port (
             clk : in std_logic;
@@ -81,128 +75,68 @@ architecture Behavioral of test_env is
         );
     end component;
 
-    signal A_FH, A_SH, B_FH, B_SH, to_display: std_logic_vector(15 downto 0);
-    signal fh, sh, rst, add, mult, opChosen, loadAF, loadAS, loadBF, loadBS, addState, multState: std_logic:='0';
+    signal A_FH, A_SH, B_FH, B_SH: std_logic_vector(15 downto 0);
+    signal fh, sh, rst, add, mult, opChosen, loadAF, loadAS, loadBF, loadBS: std_logic:='0';
     signal done: std_logic;
-    signal result, sum, product: std_logic_vector(31 downto 0):= "00000000000000000000000000000000";
+    signal result, sum, product: std_logic_vector(31 downto 0);
 
 begin
 
-    equalB: MPG port map (clk, btn(0), rst);
-
+    resetB: MPG port map (clk, btn(0), rst);
+    led(5) <= rst;
     plusB: MPG port map (clk, btn(1), add);
-
+    led(6) <= add;
     firstHalfB: MPG port map (clk, btn(2), fh);
-
+    led(7) <= fh;
     secondHalfB: MPG port map (clk, btn(3), sh);
-
+    led(8) <= sh;
     timesB: MPG port map(clk, btn(4), mult);
+    led(9) <= mult;
 
-
+--    opChosen <= '1' when (add='1' or mult ='1');
+--    led(0) <= opChosen;
+--    loadAF <= '1' when (fh = '1' and opChosen ='0') else '0';
+--    led(1) <= loadAF;
+--    loadAS<= '1' when (sh = '1' and opChosen ='0') else '0';
+--    led(2) <= loadAS;
+--    loadBF <= '1' when (fh = '1' and opChosen ='1') else '0';
+--    led(3) <= loadBF;
+--    loadBS<= '1' when (sh = '1' and opChosen ='1') else '0';
+--    led(4) <= loadBS;
+    
     process(clk)
-        variable fhState1, shState1, fhState2, shState2, rstState,  inputDone: std_logic:='0';
-        variable count_fh, count_sh :integer:= 0;
-    begin --buttons stay 1 just when pressed, so maybe i need some signals to check if those buttons were pressed at a moments, sometime
-        if rising_edge(clk) then
-            led(5) <= rst;
-            led(6) <= addState;
-            led(7) <= fhState1;
-            led(8) <= shState2;
-            led(9) <= multState;
-            led(10) <= inputDone;
-            led(11) <= fhState2;
-            led(12) <= shState1;
-            if rst = '1' then
-                fhState1 := '0';
-                shState1 := '0';
-                fhState2 := '0';
-                shState2 := '0';
-                rstState := '0';
-                addState <= '0';
-                multState <= '0';
-                count_fh := 0;
-                count_sh := 0;
-                opChosen <= '0';
-                loadAF <= '0';
-                loadAS <= '0';
-                loadBF <= '0';
-                loadBS <= '0';
-                inputDone := '0';
-                result <= (others => '0');
-                to_display <= (others => '0');
-            end if;
-            if (add = '1') then
-                addState <= '1';
-            end if;
-            if (mult = '1') then
-                multState <= '1';
-            end if;
-            if fh = '1' and fhState1 = '0' and opChosen = '0' then
-                fhState1 := '1';
-                --to_display <= A_FH;
-            end if;
-            if fh = '1' and fhState1 = '1'and opChosen = '1' then
-                fhState2 := '1';
-            end if;
-            if sh = '1' and shState1 = '0' and opChosen = '0' then
-                shState1 := '1';
-            end if;
-            if sh = '1' and shState1 = '1' and  opChosen = '1' then
-                shState2 := '1';
-            end if;
-            if (add = '1' or mult = '1') then
-                opChosen <= '1';
-            end if;
-            led(0) <= opChosen;
---            if (fh = '1' and opChosen ='0') then
---                loadAF <= '1';
---            else loadAF <= '0';
---            end if;
---            led(1) <= loadAF;
---            if (sh = '1' and opChosen ='0') then
---                loadAS<= '1';
---            else loadAS<= '0';
---            end if;
---            led(2) <= loadAS;
---            if (fh = '1' and opChosen ='1') then
---                loadBF <= '1';
---            else loadBF <='0';
---            end if;
---            led(3) <= loadBF;
---            if (sh = '1' and opChosen ='1') then
---                loadBS<= '1';
---            else loadBS<='0';
---            end if;
-            loadAF <= fhState1;
-            loadBF <= fhState2;
-            loadAS <= shState1;
-            loadBS <= shState2;
-            if (loadBS = '1') then
-                inputDone := '1';
-            end if;
-            led(4) <= loadBS;
-            if A_FH = "0000000000000000" then led(15) <= '1';
-            end if;
-            if inputDone = '1'  then
---                if (addState = '1' and multState = '0') then
---                    result <= sum;
---                end if;
---                if (addState = '0' and multState = '1') then
---                    result <= product;
---                end if;
-                --report "Value of result: " & integer'image(to_integer(unsigned(result)));
-                --                file results : text open write_mode is "C:\Users\Cipleu\Documents\IULIA\SCOALA\facultate\Year 3 Semester 1\SCS\Lab\project\alu_fp_4\results.txt";
-                --                write(result_line, string'("Result: " & to_string(result)));
-                --                writeline(result_file, result_line);
-                --                file_close(results);
-                to_display <= result(31 downto 16);
-                --else to_display <= result(15 downto 0);
-            end if;
-            --            if eq = '1' then 
-            --            else 
-            --            end if; --that was for press eq to show second half of result
+    begin
+        if rst = '1' then 
+            opChosen <= '0';
+            loadAF <= '0';
+            loadAS <= '0';
+            loadBF <= '0';
+            loadBS <= '0';
+            result <= (others => '0');
         end if;
+        
+        if add='1' or mult ='1' then
+            opChosen <= '1';
+        end if;
+        if fh = '1' and opChosen ='0' then
+            loadAF <= '1';
+        end if;
+        if sh = '1' and opChosen ='0' then
+            loadAS <= '1';
+        end if;
+        if fh = '1' and opChosen ='1' then
+            loadBF <= '1';
+        end if;
+        if sh = '1' and opChosen ='1' then
+            loadBS <= '1';
+        end if;
+        led(0) <= opChosen;
+        led(1) <= loadAF;
+        led(2) <= loadAS;
+        led(3) <= loadBF;
+        led(4) <= loadBS;
     end process;
+
     RegAFH: register_generic
         generic map (WIDTH => 16)
         port map (sw, loadAF, rst, clk, A_FH);
@@ -219,15 +153,14 @@ begin
         generic map (WIDTH => 16)
         port map (sw, loadBS, rst, clk, B_SH);
 
-    additionUnit: addition port map(A_FH&A_SH, B_FH&B_SH, clk, rst, '1', done, sum); --'1'instead of add???
+    additionUnit: addition port map(A_FH&A_SH, B_FH&B_SH, clk, rst, add, done, sum);
     multiplicationUnit: multiplier_behavioral port map (A_FH&A_SH, B_FH&B_SH, clk, product);
 
-    result <= sum when (addState = '1' and multState = '0') else product;
-    to_display <= result(31 downto 16);
+    result <= sum when (add = '1' and mult = '0') else product;
 
-    --    SSDUnit: SSD port map (clk, result(3 downto 0), result(7 downto 4), result(11 downto 8), result(15 downto 12), result(19 downto 16), result(23 downto 20), result (27 downto 24),
-    --                 result(31 downto 28), an, cat);
-
-    SSD2Unit: SSD2 port map (clk, to_display(3 downto 0), to_display(7 downto 4), to_display(11 downto 8), to_display(15 downto 12), an, cat);
+--    SSDUnit: SSD port map (clk, result(3 downto 0), result(7 downto 4), result(11 downto 8), result(15 downto 12), result(19 downto 16), result(23 downto 20), result (27 downto 24),
+--                 result(31 downto 28), an, cat);
+    SSDUnit2: SSD2 port map (clk, result(19 downto 16), result(23 downto 20), result (27 downto 24),
+                 result(31 downto 28), an, cat);
 
 end Behavioral;
