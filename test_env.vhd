@@ -93,20 +93,20 @@ begin
     timesB: MPG port map(clk, btn(4), mult);
     led(9) <= mult;
 
---    opChosen <= '1' when (add='1' or mult ='1');
---    led(0) <= opChosen;
---    loadAF <= '1' when (fh = '1' and opChosen ='0') else '0';
---    led(1) <= loadAF;
---    loadAS<= '1' when (sh = '1' and opChosen ='0') else '0';
---    led(2) <= loadAS;
---    loadBF <= '1' when (fh = '1' and opChosen ='1') else '0';
---    led(3) <= loadBF;
---    loadBS<= '1' when (sh = '1' and opChosen ='1') else '0';
---    led(4) <= loadBS;
-    
+    --    opChosen <= '1' when (add='1' or mult ='1');
+    --    led(0) <= opChosen;
+    --    loadAF <= '1' when (fh = '1' and opChosen ='0') else '0';
+    --    led(1) <= loadAF;
+    --    loadAS<= '1' when (sh = '1' and opChosen ='0') else '0';
+    --    led(2) <= loadAS;
+    --    loadBF <= '1' when (fh = '1' and opChosen ='1') else '0';
+    --    led(3) <= loadBF;
+    --    loadBS<= '1' when (sh = '1' and opChosen ='1') else '0';
+    --    led(4) <= loadBS;
+
     process(clk)
     begin
-        if rst = '1' then 
+        if rst = '1' then
             opChosen <= '0';
             loadAF <= '0';
             loadAS <= '0';
@@ -114,7 +114,7 @@ begin
             loadBS <= '0';
             result <= (others => '0');
         end if;
-        
+
         if add='1' or mult ='1' then
             opChosen <= '1';
         end if;
@@ -141,6 +141,8 @@ begin
         generic map (WIDTH => 16)
         port map (sw, loadAF, rst, clk, A_FH);
 
+    led(15) <= '1' when A_FH = "0000000000000000" else '0';
+
     RegASH: register_generic
         generic map (WIDTH => 16)
         port map (sw, loadAS, rst, clk, A_SH);
@@ -158,8 +160,8 @@ begin
 
     result <= sum when (add = '1' and mult = '0') else product;
 
---    SSDUnit: SSD port map (clk, result(3 downto 0), result(7 downto 4), result(11 downto 8), result(15 downto 12), result(19 downto 16), result(23 downto 20), result (27 downto 24),
---                 result(31 downto 28), an, cat);
+    --    SSDUnit: SSD port map (clk, result(3 downto 0), result(7 downto 4), result(11 downto 8), result(15 downto 12), result(19 downto 16), result(23 downto 20), result (27 downto 24),
+    --                 result(31 downto 28), an, cat);
     SSDUnit2: SSD2 port map (clk, result(19 downto 16), result(23 downto 20), result (27 downto 24),
                  result(31 downto 28), an, cat);
 
