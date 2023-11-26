@@ -123,7 +123,7 @@ begin
         start <= '1';
         wait until done = '1';
         report "Expected sum 12 = 41400000";
-        report "Expected result 32 = 42000000";
+        report "Expected product 32 = 42000000";
 
         A <= "01000000100000000000000000000000"; -- 4
         B <= "01000001000000000000000000000000"; -- 8
@@ -135,7 +135,7 @@ begin
         start <= '1';
         wait until done = '1';
         report "Expected sum 12 = 41400000";
-        report "Expected result 32 = 42000000";
+        report "Expected product 32 = 42000000";
 
 
         A <= "01000001101001000000000000000000"; -- 20.5
