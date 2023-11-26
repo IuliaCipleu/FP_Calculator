@@ -19,7 +19,7 @@ architecture Behavioral of addition_tb is
     end component;
 
     signal clk, reset, start, done: std_logic;
-    signal A, B, RESULT: std_logic_vector(31 downto 0);
+    signal A, B, RESULT: std_logic_vector(31 downto 0):= (others => '0');
     constant period: time := 10 ns;
 
 begin
@@ -45,6 +45,26 @@ begin
     stimulus: process
     begin
     
+    -- Test Case 0: A=0, B=0 (Expected Result: 0)
+        A <= "00000000000000000000000000000000";
+        B <= "00000000000000000000000000000000";
+        reset <= '1';
+        start <= '0';
+        wait for 2 * period;
+        reset <= '0';
+        start <= '1';
+        wait until done = '1';
+        
+        -- Positive Assertion: Check for Correct Result
+        assert Result = "00000000000000000000000000000000"
+        report "Test 0 passed: Correct result"
+        severity note;
+
+        -- Negative Assertion: Check for Incorrect Result
+        assert Result /= "00000000000000000000000000000000"
+        report "Test 0 failed: Incorrect result"
+        severity error;
+        wait for 2 * period;
     -- Test Case 1: A=9.245, B=4.957 (Expected Result: 14.202)
         A <= "01000000100100111000000000000000";
         B <= "01000000001001001111010111000000";
@@ -123,6 +143,26 @@ begin
         -- Negative Assertion: Check for Incorrect Result
         assert Result /= "00111111000110011001100110011011"
         report "Test 4 failed: Incorrect result"
+        severity error;
+        
+        -- Test Case 5: A=2.0, B=2.0 (Expected Result: 4.0)
+        A <= "01000000000000000000000000000000";
+        B <= "01000000000000000000000000000000";
+        reset <= '1';
+        start <= '0';
+        wait for 2 * period;
+        reset <= '0';
+        start <= '1';
+        wait until done = '1';
+
+        -- Positive Assertion: Check for Correct Result
+        assert Result = "01000000100000000000000000000000"
+        report "Test 5 passed: Correct result: 40800000"
+        severity note;
+
+        -- Negative Assertion: Check for Incorrect Result
+        assert Result /= "01000000100000000000000000000000"
+        report "Test 5 failed: Incorrect result: 40800000"
         severity error;        
 
         wait;
