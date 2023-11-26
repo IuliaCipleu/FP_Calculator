@@ -351,14 +351,14 @@ library IEEE;
 use IEEE.STD_LOGIC_1164.ALL;
 use ieee.std_logic_unsigned.all;
 
-entity multiplier_behavioral is
+entity multiplier_behavioral_booth is
     Port ( x : in  STD_LOGIC_VECTOR (31 downto 0);
          y : in  STD_LOGIC_VECTOR (31 downto 0);
          clk: in std_logic;
          z : out  STD_LOGIC_VECTOR (31 downto 0));
-end multiplier_behavioral;
+end multiplier_behavioral_booth;
 
-architecture Behavioral of multiplier_behavioral is
+architecture Behavioral of multiplier_behavioral_booth is
     component booth_multiplier_behavioral
         GENERIC (
             x : INTEGER := 8;

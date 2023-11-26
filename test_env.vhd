@@ -83,15 +83,15 @@ architecture Behavioral of test_env is
 begin
 
     resetB: MPG port map (clk, btn(0), rst);
-    led(5) <= rst;
+    --led(5) <= rst;
     plusB: MPG port map (clk, btn(1), add);
-    led(6) <= add;
+    --led(6) <= add;
     firstHalfB: MPG port map (clk, btn(2), fh);
-    led(7) <= fh;
+    --led(7) <= fh;
     secondHalfB: MPG port map (clk, btn(3), sh);
-    led(8) <= sh;
+    --led(8) <= sh;
     timesB: MPG port map(clk, btn(4), mult);
-    led(9) <= mult;
+    --led(9) <= mult;
 
     --    opChosen <= '1' when (add='1' or mult ='1');
     --    led(0) <= opChosen;
@@ -120,28 +120,32 @@ begin
         end if;
         if fh = '1' and opChosen ='0' then
             loadAF <= '1';
+            else loadAF <= '0';
         end if;
         if sh = '1' and opChosen ='0' then
             loadAS <= '1';
+             else loadAS <= '0';
         end if;
         if fh = '1' and opChosen ='1' then
             loadBF <= '1';
+             else loadBF <= '0';
         end if;
         if sh = '1' and opChosen ='1' then
             loadBS <= '1';
+             else loadBS <= '0';
         end if;
-        led(0) <= opChosen;
-        led(1) <= loadAF;
-        led(2) <= loadAS;
-        led(3) <= loadBF;
-        led(4) <= loadBS;
+--        led(0) <= opChosen;
+--        led(1) <= loadAF;
+--        led(2) <= loadAS;
+--        led(3) <= loadBF;
+--        led(4) <= loadBS;
     end process;
 
     RegAFH: register_generic
         generic map (WIDTH => 16)
         port map (sw, loadAF, rst, clk, A_FH);
 
-    led(15) <= '1' when A_FH = "0000000000000000" else '0';
+    --led(15) <= '1' when A_FH = "0000000000000000" else '0';
 
     RegASH: register_generic
         generic map (WIDTH => 16)

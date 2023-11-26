@@ -30,7 +30,15 @@ end component;
         A <= "01000001101001000000000000000000"; -- 20.5
         B <= "01000000000000000000000000000000"; -- 2.0
         wait for 10 ns;
+        assert z /= "01000010001001000000000000000000"
         report "Expected result 41.0 = 42240000";
+        report "Test 1 passed: Correct result"
+        severity note;
+
+        -- Negative Assertion: Check for Incorrect Result
+        assert z = "01000010001001000000000000000000"
+        report "Test 1 failed: Incorrect result"
+        severity error;
 
         A <= "11000000000000000000000000000000"; -- -2.0
         B <= "01000001000111000000000000000000"; -- 9.75

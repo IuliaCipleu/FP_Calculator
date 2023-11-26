@@ -89,66 +89,66 @@ begin
         report "Test 1 failed: Incorrect result"
         severity error;   
 
-        -- Test Case 2: A=-0.8, B=7.6 (Expected Result: 6.8)
+        -- Test Case 2: A=-1.625, B=9.0625 (Expected Result: 7.4375)
         
         reset <= '1';
         start <= '0';
         wait for period;
-        A <= "11000000101000000000000000000000";
-        B <= "01000000111110000000000000000000";
+        A <= "10111111110100000000000000000000";
+        B <= "01000001000100010000000000000000";
         reset <= '0';
         start <= '1';
         wait until done = '1';
 
         -- Positive Assertion: Check for Correct Result
-        assert Result /= "01000000110110000000000000000000"
+        assert Result /= "01000000111011100000000000000000"
         report "Test 2 passed: Correct result"
         severity note;
 
         -- Negative Assertion: Check for Incorrect Result
-        assert Result = "01000000110110000000000000000000"
+        assert Result = "01000000111011100000000000000000"
         report "Test 2 failed: Incorrect result"
         severity error;
 
-        -- Test Case 3: A=--3.5, B=-1.2 (Expected Result: -4.7)
+        -- Test Case 3: A=-104.015625, B=-5.5 (Expected Result: -109.515625)
         
         reset <= '1';
         start <= '0';
         wait for period;
-        A <= "11000000011000000000000000000000";
-        B <= "10111111101100110011001100110011";
+        A <= "11000010110100000000100000000000";
+        B <= "11000000101100000000000000000000";
         reset <= '0';
         start <= '1';
         wait until done = '1';
 
         -- Positive Assertion: Check for Correct Result
-        assert Result /= "11000000010000000000000000000000"
+        assert Result /= "11000010110110110000100000000000"
         report "Test 3 passed: Correct result"
         severity note;
 
         -- Negative Assertion: Check for Incorrect Result
-        assert Result = "11000000010000000000000000000000"
+        assert Result = "11000010110110110000100000000000"
         report "Test 3 failed: Incorrect result"
         severity error;
 
-        -- Test Case 4: A=7.4, B=-5.3 (Expected Result: 2.1)
+        -- Test Case 4: A=21.7499999999999999999, B=-8.49999999999999 (Expected Result: 13.25)
        
         reset <= '1';
         start <= '0';
         wait for period;
-         A <= "01000000111011001100110011001101";
-        B <= "11000000010101010101010101010101";
+        A <= "01000001101011100000000000000000";
+        B <= "11000001000010000000000000000000";
         reset <= '0';
         start <= '1';
         wait until done = '1';
 
         -- Positive Assertion: Check for Correct Result
-        assert Result /= "00111111000110011001100110011011"
+        assert Result /= "01000001010101000000000000000000"
         report "Test 4 passed: Correct result"
         severity note;
 
         -- Negative Assertion: Check for Incorrect Result
-        assert Result = "00111111000110011001100110011011"
+        assert Result = "01000001010101000000000000000000"
         report "Test 4 failed: Incorrect result"
         severity error;
         
@@ -165,7 +165,7 @@ begin
 
         -- Positive Assertion: Check for Correct Result
         assert Result /= "01000000100000000000000000000000"
-        report "Test 5 passed: Correct result: 40800000"
+        report "Test 5 passed: Correct result"
         severity note;
 
         -- Negative Assertion: Check for Incorrect Result

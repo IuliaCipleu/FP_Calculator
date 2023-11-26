@@ -34,7 +34,7 @@ begin
             y_exponent := y(30 downto 23);
             y_sign := y(31);
 
-            -- inf*0 is not tested (result would be NaN)
+            -- special cases
             if (x_exponent=255 or y_exponent=255) then
                 -- inf*x or x*inf
                 z_exponent := "11111111";
@@ -59,7 +59,7 @@ begin
                 end if;
 
                 -- calculate exponent
-                exponent_sum := ('0' & x_exponent) + ('0' & y_exponent) + aux - 127;
+                exponent_sum := ('0' & x_exponent) + ('0' & y_exponent) + aux - 127; --bias
 
                 if (exponent_sum(8)='1') then
                     if (exponent_sum(7)='0') then -- overflow
@@ -71,7 +71,7 @@ begin
                         z_mantissa := (others => '0');
                         z_sign := '0';
                     end if;
-                else								  		 -- Ok
+                else								  		 -- Ok, finish
                     z_exponent := exponent_sum(7 downto 0);
                     z_sign := x_sign xor y_sign;
                 end if;
