@@ -46,11 +46,12 @@ begin
     begin
     
     -- Test Case 0: A=0, B=0 (Expected Result: 0)
-        A <= "00000000000000000000000000000000";
-        B <= "00000000000000000000000000000000";
+        
         reset <= '1';
         start <= '0';
-        wait for 2 * period;
+        wait for period;
+        A <= "00000000000000000000000000000000";
+        B <= "00000000000000000000000000000000";
         reset <= '0';
         start <= '1';
         wait until done = '1';
@@ -65,12 +66,13 @@ begin
         report "Test 0 failed: Incorrect result"
         severity error;
         wait for 2 * period;
-    -- Test Case 1: A=9.245, B=4.957 (Expected Result: 14.202)
+        
+        -- Test Case 1: A=9.245, B=4.957 (Expected Result: 14.202)
         A <= "01000000100100111000000000000000";
         B <= "01000000001001001111010111000000";
         reset <= '1';
         start <= '0';
-        wait for 2 * period;
+        wait for period;
         reset <= '0';
         start <= '1';
         wait until done = '1';
@@ -90,7 +92,7 @@ begin
         B <= "01000000111110000000000000000000";
         reset <= '1';
         start <= '0';
-        wait for 2 * period;
+        wait for period;
         reset <= '0';
         start <= '1';
         wait until done = '1';
@@ -110,7 +112,7 @@ begin
         B <= "10111111101100110011001100110011";
         reset <= '1';
         start <= '0';
-        wait for 2 * period;
+        wait for period;
         reset <= '0';
         start <= '1';
         wait until done = '1';
@@ -130,7 +132,7 @@ begin
         B <= "11000000010101010101010101010101";
         reset <= '1';
         start <= '0';
-        wait for 2 * period;
+        wait for period;
         reset <= '0';
         start <= '1';
         wait until done = '1';
@@ -150,7 +152,7 @@ begin
         B <= "01000000000000000000000000000000";
         reset <= '1';
         start <= '0';
-        wait for 2 * period;
+        wait for period;
         reset <= '0';
         start <= '1';
         wait until done = '1';
