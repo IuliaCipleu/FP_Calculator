@@ -146,6 +146,7 @@ begin
         port map (sw, loadAF, rst, clk, A_FH);
 
     --led(15) <= '1' when A_FH = "0000000000000000" else '0';
+    led <= A_SH; --why is lit up at afh????
 
     RegASH: register_generic
         generic map (WIDTH => 16)
