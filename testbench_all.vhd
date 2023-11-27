@@ -71,179 +71,223 @@ architecture Behavioral of testbench_all is
              Overflow_flag: out std_logic);
     end component;
 
-    signal clk, overflow_flag_mult, overflow_flag_add, done, reset, start: std_logic := '0';
+    signal clk, done, reset, start: std_logic := '0';
     signal A, B: std_logic_vector(31 downto 0);
-    signal ProductBehavioral, ProductStructural, SumBehavioral, SumStructural: std_logic_vector(31 downto 0);
-    constant CLOCK_PERIOD: time := 10 ns;
+    signal ProductBehavioral, SumBehavioral: std_logic_vector(31 downto 0);
+    constant period: time := 10 ns;
 
 begin
 
     clk_process: process
     begin
         clk <= '0';
-        wait for CLOCK_PERIOD / 2;
+        wait for period / 2;
         clk <= '1';
-        wait for CLOCK_PERIOD / 2;
+        wait for period / 2;
     end process;
 
-    stim_process: process
+    stimulus: process
     begin
-
-        A <= "00000000000000000000000000000000"; -- 0
-        B <= "00000000000000000000000000000000"; -- 0
-        --wait for 10 ns;
+    
+    -- Test Case 0: A=0, B=0 (Expected Result: 0)
+        
         reset <= '1';
         start <= '0';
-        wait for 2 * CLOCK_PERIOD;
+        wait for period;
+        A <= "00000000000000000000000000000000";
+        B <= "00000000000000000000000000000000";
+        reset <= '0';
+        start <= '1';
+        wait for period;
+        --wait until done = '1';
+        
+        -- Positive Assertion: Check for Correct Result
+        assert SumBehavioral /= "00000000000000000000000000000000"
+        report "Test 0 passed: Correct sum"
+        severity note;
+
+        -- Negative Assertion: Check for Incorrect Result
+        assert SumBehavioral = "00000000000000000000000000000000"
+        report "Test 0 failed: Incorrect sum"
+        severity error;
+        wait for 2 * period;
+        
+        -- Positive Assertion: Check for Correct Result
+        assert ProductBehavioral /= "00000000000000000000000000000000"
+        report "Test 0 passed: Correct product"
+        severity note;
+
+        -- Negative Assertion: Check for Incorrect Result
+        assert ProductBehavioral = "00000000000000000000000000000000"
+        report "Test 0 failed: Incorrect product"
+        severity error;
+        wait for 2 * period;
+        
+        -- Test Case 1: A=3.5, B=6.75 (Expected Result: 10.25)
+        
+        reset <= '1';
+        start <= '0';
+        wait for period;
+        A <= "01000000011000000000000000000000";
+        B <= "01000000110110000000000000000000";
         reset <= '0';
         start <= '1';
         wait until done = '1';
-        report "Expected sum 0 = 0";
-        report "Expected product 0 = 0";
 
-        A <= "00000000000000000000000000000000"; -- 0
-        B <= "00000000000000000000000000000000"; -- 0
-        --wait for 10 ns;
+        -- Positive Assertion: Check for Correct Result
+        assert SumBehavioral /= "01000001001001000000000000000000"
+        report "Test 1 passed: Correct sum"
+        severity note;
+
+        -- Negative Assertion: Check for Incorrect Result
+        assert SumBehavioral = "01000001001001000000000000000000"
+        report "Test 1 failed: Incorrect sum"
+        severity error; 
+        
+        -- Positive Assertion: Check for Correct Result
+        assert ProductBehavioral /= "01000001101111010000000000000000"
+        report "Test 1 passed: Correct product"
+        severity note;
+
+        -- Negative Assertion: Check for Incorrect Result
+        assert ProductBehavioral = "01000001101111010000000000000000"
+        report "Test 1 failed: Incorrect product"
+        severity error;  
+
+        -- Test Case 2: A=-1.625, B=9.0625 (Expected Result: 7.4375)
+        
         reset <= '1';
         start <= '0';
-        wait for 2 * CLOCK_PERIOD;
+        wait for period;
+        A <= "10111111110100000000000000000000";
+        B <= "01000001000100010000000000000000";
         reset <= '0';
         start <= '1';
         wait until done = '1';
-        report "Expected sum 0 = 0";
-        report "Expected product 0 = 0";
 
-        A <= "01000000100000000000000000000000"; -- 4
-        B <= "01000001000000000000000000000000"; -- 8
-        --wait for 10 ns;
+        -- Positive Assertion: Check for Correct Result
+        assert SumBehavioral /= "01000000111011100000000000000000"
+        report "Test 2 passed: Correct sum"
+        severity note;
+
+        -- Negative Assertion: Check for Incorrect Result
+        assert SumBehavioral = "01000000111011100000000000000000"
+        report "Test 2 failed: Incorrect sum"
+        severity error;
+        
+        -- Positive Assertion: Check for Correct Result
+        assert ProductBehavioral /= "11000001011010111010000000000000"
+        report "Test 2 passed: Correct product"
+        severity note;
+
+        -- Negative Assertion: Check for Incorrect Result
+        assert ProductBehavioral = "11000001011010111010000000000000"
+        report "Test 2 failed: Incorrect product"
+        severity error;
+
+        -- Test Case 3: A=-104.015625, B=-5.5 (Expected Result: -109.515625)
+        
         reset <= '1';
         start <= '0';
-        wait for 2 * CLOCK_PERIOD;
+        wait for period;
+        A <= "11000010110100000000100000000000";
+        B <= "11000000101100000000000000000000";
         reset <= '0';
         start <= '1';
         wait until done = '1';
-        report "Expected sum 12 = 41400000";
-        report "Expected product 32 = 42000000";
 
-        A <= "01000000100000000000000000000000"; -- 4
-        B <= "01000001000000000000000000000000"; -- 8
-        --wait for 10 ns;
+        -- Positive Assertion: Check for Correct Result
+        assert SumBehavioral /= "11000010110110110000100000000000"
+        report "Test 3 passed: Correct sum"
+        severity note;
+
+        -- Negative Assertion: Check for Incorrect Result
+        assert SumBehavioral = "11000010110110110000100000000000"
+        report "Test 3 failed: Incorrect sum"
+        severity error;
+        
+        -- Positive Assertion: Check for Correct Result
+        assert ProductBehavioral /= "01000100000011110000010110000000"
+        report "Test 3 passed: Correct product"
+        severity note;
+
+        -- Negative Assertion: Check for Incorrect Result
+        assert ProductBehavioral = "01000100000011110000010110000000"
+        report "Test 3 failed: Incorrect product"
+        severity error;
+
+        -- Test Case 4: A=21.7499999999999999999, B=-8.49999999999999 (Expected Result: 13.25)
+       
         reset <= '1';
         start <= '0';
-        wait for 2 * CLOCK_PERIOD;
+        wait for period;
+        A <= "01000001101011100000000000000000";
+        B <= "11000001000010000000000000000000";
         reset <= '0';
         start <= '1';
         wait until done = '1';
-        report "Expected sum 12 = 41400000";
-        report "Expected product 32 = 42000000";
 
+        -- Positive Assertion: Check for Correct Result
+        assert SumBehavioral /= "01000001010101000000000000000000"
+        report "Test 4 passed: Correct sum"
+        severity note;
 
-        A <= "01000001101001000000000000000000"; -- 20.5
-        B <= "01000000000000000000000000000000"; -- 2.0
-        --wait for 10 ns;
+        -- Negative Assertion: Check for Incorrect Result
+        assert SumBehavioral = "01000001010101000000000000000000"
+        report "Test 4 failed: Incorrect sum"
+        severity error;
+        
+        -- Positive Assertion: Check for Correct Result
+        assert ProductBehavioral /= "11000011001110001110000000000000"
+        report "Test 4 passed: Correct product"
+        severity note;
+
+        -- Negative Assertion: Check for Incorrect Result
+        assert ProductBehavioral = "11000011001110001110000000000000"
+        report "Test 4 failed: Incorrect product"
+        severity error;
+        
+        -- Test Case 5: A=2.0, B=2.0 (Expected Result: 4.0)
+        
         reset <= '1';
         start <= '0';
-        wait for 2 * CLOCK_PERIOD;
+        wait for period;
+        A <= "01000000000000000000000000000000";
+        B <= "01000000000000000000000000000000";
         reset <= '0';
         start <= '1';
         wait until done = '1';
-        report "Expected sum 22.5 = 41b40000";
-        report "Expected product 41.0 = 42240000";
 
-        A <= "01000001101001000000000000000000"; -- 20.5
-        B <= "01000000000000000000000000000000"; -- 2.0
-        --wait for 10 ns;
-        reset <= '1';
-        start <= '0';
-        wait for 2 * CLOCK_PERIOD;
-        reset <= '0';
-        start <= '1';
-        wait until done = '1';
-        report "Expected sum 22.5 = 41b40000";
-        report "Expected product 41.0 = 42240000";
+        -- Positive Assertion: Check for Correct Result
+        assert SumBehavioral /= "01000000100000000000000000000000"
+        report "Test 5 passed: Correct sum"
+        severity note;
 
-        A <= "11000000000000000000000000000000"; -- -2.0
-        B <= "01000001000111000000000000000000"; -- 9.75
-        --wait for 10 ns;
-        reset <= '1';
-        start <= '0';
-        wait for 2 * CLOCK_PERIOD;
-        reset <= '0';
-        start <= '1';
-        wait until done = '1';
-        report "Expected sum 7.75 = 40f80000";
-        report "Expected product -19.5 = 19c0000";
+        -- Negative Assertion: Check for Incorrect Result
+        assert SumBehavioral = "01000000100000000000000000000000"
+        report "Test 5 failed: Incorrect sum"
+        severity error;  
+        
+        -- Positive Assertion: Check for Correct Result
+        assert ProductBehavioral /= "01000000100000000000000000000000"
+        report "Test 5 passed: Correct product"
+        severity note;
 
-        A <= "11000000000000000000000000000000"; -- -2.0
-        B <= "01000001000111000000000000000000"; -- 9.75
-        --wait for 10 ns;
-        reset <= '1';
-        start <= '0';
-        wait for 2 * CLOCK_PERIOD;
-        reset <= '0';
-        start <= '1';
-        wait until done = '1';
-        report "Expected sum 7.75 = 40f80000";
-        report "Expected product -19.5 = 19c0000";
-
-        A <= "01000000011001100110011001100110"; -- 3.6
-        B <= "01000001001000000000000000000000"; -- 10.0
-        --wait for 10 ns;
-        reset <= '1';
-        start <= '0';
-        wait for 2 * CLOCK_PERIOD;
-        reset <= '0';
-        start <= '1';
-        wait until done = '1';
-        report "Expected sum 13.6 = 4159999a";
-        report "Expected product 36 = 42100000";
-
-        A <= "01000000011001100110011001100110"; -- 3.6
-        B <= "01000001001000000000000000000000"; -- 10.0
-        --wait for 10 ns;
-        reset <= '1';
-        start <= '0';
-        wait for 2 * CLOCK_PERIOD;
-        reset <= '0';
-        start <= '1';
-        wait until done = '1';
-        report "Expected sum 13.6 = 4159999a";
-        report "Expected product 36 = 42100000";
-
-        A <= "11000000100001100110011001100110"; -- -4.2
-        B <= "11000000010100000000000000000000"; -- -3.25
-        --wait for 10 ns;
-        reset <= '1';
-        start <= '0';
-        wait for 2 * CLOCK_PERIOD;
-        reset <= '0';
-        start <= '1';
-        wait until done = '1';
-        report "Expected sum -7.45 = c0ee6666";
-        report "Expected product 13.65 = 415a6666";
-
-        A <= "11000000100001100110011001100110"; -- -4.2
-        B <= "11000000010100000000000000000000"; -- -3.25
-        --wait for 10 ns;
-        reset <= '1';
-        start <= '0';
-        wait for 2 * CLOCK_PERIOD;
-        reset <= '0';
-        start <= '1';
-        wait until done = '1';
-        report "Expected sum -7.45 = c0ee6666";
-        report "Expected product 13.65 = 415a6666";
+        -- Negative Assertion: Check for Incorrect Result
+        assert ProductBehavioral = "01000000100000000000000000000000"
+        report "Test 5 failed: Incorrect product"
+        severity error;      
 
         wait;
     end process;
-    DUT1: multiplication_fp
-        port map (
-            A => A,
-            B => B,
-            Product => ProductStructural,
-            overflow_flag => overflow_flag_mult,
-            clk => clk
-        );
+--    DUT1: multiplication_fp
+--        port map (
+--            A => A,
+--            B => B,
+--            Product => ProductStructural,
+--            overflow_flag => overflow_flag_mult,
+--            clk => clk
+--        );
 
     DUT2: multiplier_behavioral
         port map (
@@ -264,13 +308,13 @@ begin
             RESULT => SumBehavioral
         );
 
-    DUT4: addition_fp
-        port map (
-            A => A,
-            B => B,
-            clk => clk,
-            Sum => SumStructural,
-            overflow_flag => overflow_flag_add
-        );
+--    DUT4: addition_fp
+--        port map (
+--            A => A,
+--            B => B,
+--            clk => clk,
+--            Sum => SumStructural,
+--            overflow_flag => overflow_flag_add
+--        );
 
 end Behavioral;
