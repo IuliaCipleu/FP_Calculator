@@ -121,7 +121,7 @@ begin
         assert ProductBehavioral = "00000000000000000000000000000000"
         report "Test 0 failed: Incorrect product"
         severity error;
-        wait for 2 * period;
+        --wait for 2 * period;
         
         -- Test Case 1: A=3.5, B=6.75 (Expected Result: 10.25)
         
@@ -276,7 +276,38 @@ begin
         -- Negative Assertion: Check for Incorrect Result
         assert ProductBehavioral = "01000000100000000000000000000000"
         report "Test 5 failed: Incorrect product"
-        severity error;      
+        severity error; 
+        
+        -- Test Case 6: A=min, B=min (Expected Result: overflow)
+        
+        reset <= '1';
+        start <= '0';
+        wait for period;
+        A <= "11111111111111111111111111111111";
+        B <= "11111111111111111111111111111111";
+        reset <= '0';
+        start <= '1';
+        wait until done = '1';
+
+        -- Positive Assertion: Check for Correct Result
+        assert SumBehavioral /= "10000000011111111111111111111111"
+        report "Test 6 passed: Correct sum: overflow"
+        severity note;
+
+        -- Negative Assertion: Check for Incorrect Result
+        assert SumBehavioral = "10000000011111111111111111111111"
+        report "Test 6 failed: Incorrect sum"
+        severity error;  
+        
+        -- Positive Assertion: Check for Correct Result
+        assert ProductBehavioral /= "01111111100000000000000000000000"
+        report "Test 6 passed: Correct product: overflow"
+        severity note;
+
+        -- Negative Assertion: Check for Incorrect Result
+        assert ProductBehavioral = "01111111100000000000000000000000"
+        report "Test 6 failed: Incorrect product"
+        severity error;     
 
         wait;
     end process;
