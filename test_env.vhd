@@ -127,10 +127,10 @@ begin
         end if;
     end process;
     
-    loadAF <= '1' when countFh = 1 else '0';
-    loadAS <= '1' when countSh = 1 else '0';
-    loadBF <= '1' when countFh = 2 else '0';
-    loadBS <= '1' when countSh = 2 else '0';
+    loadAF <= '1' when (countFh = 1 and countSh = 0) else '0';
+    loadAS <= '1' when (countSh = 1 and countFh = 1) else '0';
+    loadBF <= '1' when (countFh = 2 and countSh = 1) else '0';
+    loadBS <= '1' when (countSh = 2 and countFh = 2) else '0';
 
 --    process(clk, countFh, countSh)
 --    begin
@@ -174,7 +174,8 @@ begin
         port map (sw, loadAF, rst, clk, A_FH);
 
     --led(15) <= '1' when A_FH = "0000000000000000" else '0';
-    led <= A_SH; --why is lit up at afh????
+    --led <= A_SH; --why is lit up at afh????
+    led <= sw;
 
     RegASH: register_generic
         generic map (WIDTH => 16)
@@ -188,10 +189,12 @@ begin
         generic map (WIDTH => 16)
         port map (sw, loadBS, rst, clk, B_SH);
 
-    additionUnit: addition port map(A_FH&A_SH, B_FH&B_SH, clk, rst, add, done, sum);
+    additionUnit: addition port map(A_FH&A_SH, B_FH&B_SH, clk, rst, loadBS, done, sum);
     multiplicationUnit: multiplier_behavioral port map (A_FH&A_SH, B_FH&B_SH, clk, product);
 
     result <= sum when opChosen = 1 else product;
+    --result <= product;
+    --result <= A_FH & A_SH;
 
     --    SSDUnit: SSD port map (clk, result(3 downto 0), result(7 downto 4), result(11 downto 8), result(15 downto 12), result(19 downto 16), result(23 downto 20), result (27 downto 24),
     --                 result(31 downto 28), an, cat);
