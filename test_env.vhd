@@ -76,9 +76,10 @@ architecture Behavioral of test_env is
     end component;
 
     signal A_FH, A_SH, B_FH, B_SH: std_logic_vector(15 downto 0);
-    signal fh, sh, rst, add, mult, opChosen, loadAF, loadAS, loadBF, loadBS: std_logic:='0';
+    signal fh, sh, rst, add, mult, loadAF, loadAS, loadBF, loadBS: std_logic:='0';
     signal done: std_logic;
     signal result, sum, product: std_logic_vector(31 downto 0);
+    signal countFh, countSh, opChosen: integer:= 0;
 
 begin
 
@@ -103,43 +104,70 @@ begin
     --    led(3) <= loadBF;
     --    loadBS<= '1' when (sh = '1' and opChosen ='1') else '0';
     --    led(4) <= loadBS;
-
     process(clk)
     begin
-        if rst = '1' then
-            opChosen <= '0';
-            loadAF <= '0';
-            loadAS <= '0';
-            loadBF <= '0';
-            loadBS <= '0';
-            result <= (others => '0');
+        if rising_edge(clk) then
+            if rst = '1' then
+                countFh <= 0;
+                countSh <= 0;
+            else
+                if fh = '1' then
+                    countFh <= countFh + 1;
+                end if;
+                if sh = '1' then
+                    countSh <= countSh + 1;
+                end if;
+                if add = '1' then 
+                    opChosen <= 1;
+                end if;
+                if mult = '1' then
+                    opChosen <= 2;
+                end if;
+            end if;
         end if;
+    end process;
+    
+    loadAF <= '1' when countFh = 1 else '0';
+    loadAS <= '1' when countSh = 1 else '0';
+    loadBF <= '1' when countFh = 2 else '0';
+    loadBS <= '1' when countSh = 2 else '0';
 
-        if add='1' or mult ='1' then
-            opChosen <= '1';
-        end if;
-        if fh = '1' and opChosen ='0' then
-            loadAF <= '1';
-            else loadAF <= '0';
-        end if;
-        if sh = '1' and opChosen ='0' then
-            loadAS <= '1';
-             else loadAS <= '0';
-        end if;
-        if fh = '1' and opChosen ='1' then
-            loadBF <= '1';
-             else loadBF <= '0';
-        end if;
-        if sh = '1' and opChosen ='1' then
-            loadBS <= '1';
-             else loadBS <= '0';
-        end if;
+--    process(clk, countFh, countSh)
+--    begin
+--        if rst = '1' then
+--            opChosen <= 0;
+--            loadAF <= '0';
+--            loadAS <= '0';
+--            loadBF <= '0';
+--            loadBS <= '0';
+--            result <= (others => '0');
+--        end if;
+
+--        if add='1' or mult ='1' then
+--            opChosen <= '1';
+--        end if;
+--        if fh = '1' and opChosen ='0' then
+--            loadAF <= '1';
+--            else loadAF <= '0';
+--        end if;
+--        if sh = '1' and opChosen ='0' then
+--            loadAS <= '1';
+--             else loadAS <= '0';
+--        end if;
+--        if fh = '1' and opChosen ='1' then
+--            loadBF <= '1';
+--             else loadBF <= '0';
+--        end if;
+--        if sh = '1' and opChosen ='1' then
+--            loadBS <= '1';
+--             else loadBS <= '0';
+--        end if;
 --        led(0) <= opChosen;
 --        led(1) <= loadAF;
 --        led(2) <= loadAS;
 --        led(3) <= loadBF;
 --        led(4) <= loadBS;
-    end process;
+--    end process;
 
     RegAFH: register_generic
         generic map (WIDTH => 16)
@@ -163,7 +191,7 @@ begin
     additionUnit: addition port map(A_FH&A_SH, B_FH&B_SH, clk, rst, add, done, sum);
     multiplicationUnit: multiplier_behavioral port map (A_FH&A_SH, B_FH&B_SH, clk, product);
 
-    result <= sum when (add = '1' and mult = '0') else product;
+    result <= sum when opChosen = 1 else product;
 
     --    SSDUnit: SSD port map (clk, result(3 downto 0), result(7 downto 4), result(11 downto 8), result(15 downto 12), result(19 downto 16), result(23 downto 20), result (27 downto 24),
     --                 result(31 downto 28), an, cat);
