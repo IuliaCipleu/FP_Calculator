@@ -75,23 +75,23 @@ architecture Behavioral of test_env is
         );
     end component;
 
-    signal A_FH, A_SH, B_FH, B_SH: std_logic_vector(15 downto 0);
-    signal fh, sh, rst, add, mult, loadAF, loadAS, loadBF, loadBS: std_logic:='0';
+    signal A_FH, A_SH, B_FH, B_SH, to_display: std_logic_vector(15 downto 0);
+    signal fh, sh, rst, op, show, loadAF, loadAS, loadBF, loadBS: std_logic:='0';
     signal done: std_logic;
     signal result, sum, product: std_logic_vector(31 downto 0);
-    signal countFh, countSh, opChosen: integer:= 0;
+    signal countFh, countSh, opChosen, countShow: integer:= 0;
 
 begin
 
     resetB: MPG port map (clk, btn(0), rst);
     --led(5) <= rst;
-    plusB: MPG port map (clk, btn(1), add);
+    plusB: MPG port map (clk, btn(1), op);
     --led(6) <= add;
     firstHalfB: MPG port map (clk, btn(2), fh);
     --led(7) <= fh;
     secondHalfB: MPG port map (clk, btn(3), sh);
     --led(8) <= sh;
-    timesB: MPG port map(clk, btn(4), mult);
+    timesB: MPG port map(clk, btn(4), show);
     --led(9) <= mult;
 
     --    opChosen <= '1' when (add='1' or mult ='1');
@@ -117,11 +117,11 @@ begin
                 if sh = '1' then
                     countSh <= countSh + 1;
                 end if;
-                if add = '1' then 
-                    opChosen <= 1;
+                if op = '1' then 
+                    opChosen <= opChosen + 1;
                 end if;
-                if mult = '1' then
-                    opChosen <= 2;
+                if show = '1' then
+                    countShow <= countShow + 1;
                 end if;
             end if;
         end if;
@@ -192,13 +192,12 @@ begin
     additionUnit: addition port map(A_FH&A_SH, B_FH&B_SH, clk, rst, loadBS, done, sum);
     multiplicationUnit: multiplier_behavioral port map (A_FH&A_SH, B_FH&B_SH, clk, product);
 
-    result <= sum when opChosen = 1 else product;
+    result <= sum when opChosen mod 2 = 0 else product; --even sum, odd product
     --result <= product;
     --result <= A_FH & A_SH;
-
+    to_display <= result(31 downto 16) when countShow mod 2 = 0 else result(15 downto 0);
     --    SSDUnit: SSD port map (clk, result(3 downto 0), result(7 downto 4), result(11 downto 8), result(15 downto 12), result(19 downto 16), result(23 downto 20), result (27 downto 24),
     --                 result(31 downto 28), an, cat);
-    SSDUnit2: SSD2 port map (clk, result(19 downto 16), result(23 downto 20), result (27 downto 24),
-                 result(31 downto 28), an, cat);
+    SSDUnit2: SSD2 port map (clk, to_display(3 downto 0), to_display(7 downto 4), to_display(11 downto 8), to_display(15 downto 12), an, cat);
 
 end Behavioral;
