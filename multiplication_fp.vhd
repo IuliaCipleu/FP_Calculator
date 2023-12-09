@@ -187,7 +187,7 @@ begin
     --norm: normalization_unit port map (P_mantissa(45 downto 23), F_exponent, clk, not P_mantissa(45), mantissa_normalized, Product(30 downto 23));
     --norm: normalization_unit port map (P_mantissa, F_exponent, clk, mantissa_normalized, Product(30 downto 23));
     norm: normalization_unit port map
-(P_mantissa, F_exponent, clk, mantissa_normalized, exponent_normalized);
+(P_mantissa_2complement, F_exponent, clk, mantissa_normalized, exponent_normalized);
 
     norm2: MantissaNormalizationUnit port map (P_mantissa, F_exponent, clk, mantissa_normalized2, exponent_normalized2);
 

@@ -15,12 +15,53 @@ architecture Behavioral of subtract_8b_tb is
         );
     end component;
     
-    signal A, B, Sub: std_logic_vector(7 downto 0);
-    signal Borrow: std_logic;
+    signal A, B, Sub, Expected_Diff: std_logic_vector(7 downto 0);
+    signal Borrow, Expected_Borrow: std_logic;
 begin
 
-    A <= "00001000", "00000010" after 10 ns, "10101010" after 20 ns;
-    B <= "00000100", "00000110" after 10 ns, "01111111" after 20 ns;
+    stimulus: process
+    begin
+        A <= "01011011";
+        B <= "11110101";
+
+        Expected_Diff <= "01100110";
+        Expected_Borrow <= '1';
+        wait for 10 ns;
+        assert Sub = Expected_Diff and Borrow = Expected_Borrow
+        report "Test 1 Failed!" severity ERROR;
+        report "Test 1 Passed!" severity NOTE;
+        
+        A <= "00010100";
+        B <= "00001110";
+
+        Expected_Diff <= "00000110";
+        Expected_Borrow <= '0';
+        wait for 10 ns;
+        assert Sub = Expected_Diff and Borrow = Expected_Borrow
+        report "Test 2 Failed!" severity ERROR;
+        report "Test 2 Passed!" severity NOTE;
+        
+        A <= "11101011";
+        B <= "10111110";
+
+        Expected_Diff <= "00101101";
+        Expected_Borrow <= '0';
+        wait for 10 ns;
+        assert Sub = Expected_Diff and Borrow = Expected_Borrow
+        report "Test 3 Failed!" severity ERROR;
+        report "Test 3 Passed!" severity NOTE;
+        
+        A <= "00011000";
+        B <= "00011111";
+
+        Expected_Diff <= "11111001";
+        Expected_Borrow <= '1';
+        wait for 10 ns;
+        assert Sub = Expected_Diff and Borrow = Expected_Borrow
+        report "Test 4 Failed!" severity ERROR;
+        report "Test 4 Passed!" severity NOTE;
+        wait;
+    end process stimulus;
     
     DUT: subtract_8b port map(A, B, Sub, Borrow);
 

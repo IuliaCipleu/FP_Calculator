@@ -14,12 +14,9 @@ architecture Behavioral of TwosComplementToBinary is
 begin
     process(twosComplementInput)
     begin
-        -- Convert 48-bit two's complement to binary
         if twosComplementInput(47) = '0' then
-            -- Positive number, no modification needed
             binaryOutput <= twosComplementInput;
         else
-            -- Negative number, perform two's complement conversion
             binaryOutput <= not twosComplementInput + "0000000000000001";
         end if;
     end process;

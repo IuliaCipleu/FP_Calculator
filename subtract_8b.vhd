@@ -53,6 +53,6 @@ begin
         );
 
     Sub <= Sum;
-    Borrow <= Cout;
+    Borrow <= '0' when A >= B else '1';
 
 end Behavioral;
