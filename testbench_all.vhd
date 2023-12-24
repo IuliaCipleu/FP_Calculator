@@ -45,7 +45,8 @@ architecture Behavioral of testbench_all is
 
     signal clk, done, reset, start: std_logic := '0';
     signal A, B: std_logic_vector(31 downto 0);
-    signal ProductBehavioral, SumBehavioral, diffSum, diffProduct, expectedSum, expectedProduct: std_logic_vector(31 downto 0);
+    signal ProductBehavioral, SumBehavioral,  expectedSum, expectedProduct: std_logic_vector(31 downto 0);
+    --diffSum, diffProduct,
     constant period: time := 10 ns;
 
 begin
@@ -57,6 +58,10 @@ begin
         clk <= '1';
         wait for period / 2;
     end process;
+
+--        diffSum <= SumBehavioral - expectedSum;
+--        diffProduct <= ProductBehavioral - expectedProduct;
+
 
     stimulus: process
     begin
@@ -70,11 +75,11 @@ begin
         B <= "00000000000000000000000000000000";
         
         expectedProduct <= "00000000000000000000000000000000";
+        expectedSum <= "00000000000000000000000000000000";
         reset <= '0';
         start <= '1';
         wait for period;
-        expectedSum <= "00000000000000000000000000000000";
-        
+       
         -- Positive Assertion: Check for Correct Result
         assert SumBehavioral /= expectedSum
         report "Test 0 passed: Correct sum"
@@ -106,11 +111,11 @@ begin
         B <= "01000000110110000000000000000000";
 
         expectedProduct <= "01000001101111010000000000000000";
+        expectedSum <= "01000001001001000000000000000000";
         reset <= '0';
         start <= '1';
         wait until done = '1';
-        expectedSum <= "01000001001001000000000000000000";
-        
+                
         -- Positive Assertion: Check for Correct Result
         assert SumBehavioral /= expectedSum
         report "Test 1 passed: Correct sum"
@@ -140,11 +145,11 @@ begin
         B <= "01000001000100010000000000000000";
         
         expectedProduct <= "11000001011010111010000000000000";
+        expectedSum <= "01000000111011100000000000000000";
         reset <= '0';
         start <= '1';
         wait until done = '1';
-        expectedSum <= "01000000111011100000000000000000";
-        
+           
         -- Positive Assertion: Check for Correct Result
         assert SumBehavioral /= expectedSum
         report "Test 2 passed: Correct sum"
@@ -174,11 +179,11 @@ begin
         B <= "11000000101100000000000000000000";
         
         expectedProduct <= "01000100000011110000010110000000";
+        expectedSum <= "11000010110110110000100000000000";
         reset <= '0';
         start <= '1';
         wait until done = '1';
-        expectedSum <= "11000010110110110000100000000000";
-
+        
         -- Positive Assertion: Check for Correct Result
         assert SumBehavioral /= expectedSum
         report "Test 3 passed: Correct sum"
@@ -208,10 +213,10 @@ begin
         B <= "11000001000010000000000000000000";
         
         expectedProduct <= "11000011001110001110000000000000";
+        expectedSum <= "01000001010101000000000000000000";
         reset <= '0';
         start <= '1';
         wait until done = '1';
-        expectedSum <= "01000001010101000000000000000000";
 
         -- Positive Assertion: Check for Correct Result
         assert SumBehavioral /= expectedSum
@@ -242,10 +247,10 @@ begin
         B <= "01000000000000000000000000000000";
         
         expectedProduct <= "01000000100000000000000000000000";
+        expectedSum <= "01000000100000000000000000000000";
         reset <= '0';
         start <= '1';
         wait until done = '1';
-        expectedSum <= "01000000100000000000000000000000";
 
         -- Positive Assertion: Check for Correct Result
         assert SumBehavioral /= expectedSum
@@ -276,11 +281,11 @@ begin
         B <= "11111111111111111111111111111111";
         
         expectedProduct <= "01111111100000000000000000000000";
+        expectedSum <= "10000000011111111111111111111111";
         reset <= '0';
         start <= '1';
         wait until done = '1';
-        expectedSum <= "10000000011111111111111111111111";
-
+        
         -- Positive Assertion: Check for Correct Result
         assert SumBehavioral /= expectedSum
         report "Test 6 passed: Correct sum: overflow"
@@ -301,7 +306,7 @@ begin
         report "Test 6 failed: Incorrect product"
         severity error;
         
-        -- Test Case 7: A=645.86, B=1005.63 (Expected Result: overflow)
+        -- Test Case 7: A=645.86, B=1005.63 
         
         reset <= '1';
         start <= '0';
@@ -310,10 +315,10 @@ begin
         B <= "01000100011110110110100001010010";
         
         expectedProduct <= "01001001000111101001000110000011";
+        expectedSum <= "01000100110011100110111110101110";
         reset <= '0';
         start <= '1';
-        wait until done = '1';
-        expectedSum <= "01000100110011100110111110101110";
+        wait until done = '1';        
 
         -- Positive Assertion: Check for Correct Result
         assert SumBehavioral /= expectedSum
@@ -335,22 +340,19 @@ begin
         report "Test 7 failed: Incorrect product"
         severity error; 
         
-        -- Test Case 8: A=76543.7261, B=-5464.379312 (Expected Result: overflow)
+        -- Test Case 8: A=482.7453742, B=-374.0463517 
         
         reset <= '1';
         start <= '0';
         wait for period;
-        A <= "01000111100101010111111111100000";
-        B <= "11000101101010101100001100001001";
+        A <= "01000011111100010101111101101000"; --43f15f68
+        B <= "11000011101110110000010111101111"; --c3bb05ef
         
-        expectedProduct <= "11001101110001110111000110011101";
+        expectedProduct <= "11001000001100000101011001001001"; -- -180569.14601956130614
+        expectedSum <= "01000010110110010110010111100110"; -- 108.6990225
         reset <= '0';
         start <= '1';
-        wait until done = '1';
-        expectedSum <= "01000111100010101101001110101100";
-        
-        diffSum <= SumBehavioral - expectedSum;
-        diffProduct <= ProductBehavioral - expectedProduct;
+        wait until done = '1';               
 
         -- Positive Assertion: Check for Correct Result
         assert SumBehavioral /= expectedSum
@@ -370,7 +372,75 @@ begin
         -- Negative Assertion: Check for Incorrect Result
         assert ProductBehavioral = expectedProduct
         report "Test 8 failed: Incorrect product"
-        severity error;     
+        severity error;    
+        
+        -- Test Case 9: A=-69427.27498, B=-943724.9543672 
+        
+        reset <= '1';
+        start <= '0';
+        wait for period;
+        A <= "11000111100001111001100110100011";
+        B <= "11001001011001100110011011001111";
+        
+        expectedProduct <= "01010001011101000001010011111011"; -- 65520251912.339546292656
+        expectedSum <= "11001001011101110101101000000100"; -- -1013152.2293472
+        reset <= '0';
+        start <= '1';
+        wait until done = '1';
+              
+        -- Positive Assertion: Check for Correct Result
+        assert SumBehavioral /= expectedSum
+        report "Test 9 passed: Correct sum"
+        severity note;
+
+        -- Negative Assertion: Check for Incorrect Result
+        assert SumBehavioral = expectedSum
+        report "Test 9 failed: Incorrect sum"
+        severity error;  
+        
+        -- Positive Assertion: Check for Correct Result
+        assert ProductBehavioral /= expectedProduct
+        report "Test 9 passed: Correct product"
+        severity note;
+
+        -- Negative Assertion: Check for Incorrect Result
+        assert ProductBehavioral = expectedProduct
+        report "Test 9 failed: Incorrect product"
+        severity error;    
+        
+        -- Test Case 10: A=56.33, B=-364.66 
+        
+        reset <= '1';
+        start <= '0';
+        wait for period;
+        A <= "01000010011000010101000111101100"; -- 426151ec
+        B <= "11000011101101100101010001111011"; -- c3b6547b
+        
+        expectedProduct <= "11000110101000000111101010011000"; -- -20541.2978      
+        expectedSum <= "11000011100110100010101000111101"; -- -308.33
+        reset <= '0';
+        start <= '1';
+        wait until done = '1';
+              
+        -- Positive Assertion: Check for Correct Result
+        assert SumBehavioral /= expectedSum
+        report "Test 10 passed: Correct sum"
+        severity note;
+
+        -- Negative Assertion: Check for Incorrect Result
+        assert SumBehavioral = expectedSum
+        report "Test 10 failed: Incorrect sum"
+        severity error;  
+        
+        -- Positive Assertion: Check for Correct Result
+        assert ProductBehavioral /= expectedProduct
+        report "Test 10 passed: Correct product"
+        severity note;
+
+        -- Negative Assertion: Check for Incorrect Result
+        assert ProductBehavioral = expectedProduct
+        report "Test 10 failed: Incorrect product"
+        severity error; 
 
         wait;
     end process;
